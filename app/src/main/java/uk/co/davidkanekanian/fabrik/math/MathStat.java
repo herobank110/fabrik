@@ -9,6 +9,7 @@ import java.util.List;
  * Static library of various math helper functions.
  */
 public final class MathStat {
+    /** @return distance between two points */
     public static float getDist(Vector2f a, Vector2f b) {
         return (float) Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
     }
@@ -35,6 +36,4 @@ public final class MathStat {
         Vector2f ret = new Vector2f(b);
         return ret.sub(a).mul(bias).add(a);
     }
-
-
 }
