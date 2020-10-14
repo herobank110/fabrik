@@ -45,6 +45,8 @@ public class Canvas extends View {
             myPaint.setColor(Color.RED);
             canvas.drawRect(myRect, myPaint);
             isFirst = false;
+            // Maybe the easiest way is to not use a complex interval drawing
+            // and just redraw when the model has changed.
             this.invalidate();
         }
     }
