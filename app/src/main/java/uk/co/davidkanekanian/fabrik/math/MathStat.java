@@ -36,4 +36,13 @@ public final class MathStat {
         Vector2f ret = new Vector2f(b);
         return ret.sub(a).mul(bias).add(a);
     }
+
+    /** @return sum of list of floats */
+    public static float sum(Iterable<Float> lengths) {
+        float ret = 0;
+        for (float v : lengths) {
+            ret += v;
+        }
+        return ret;
+    }
 }

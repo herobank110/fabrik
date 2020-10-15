@@ -51,4 +51,10 @@ public class MathStatTest {
         assertEquals(5.f, result.x, 0.f);
         assertEquals(5.f, result.y, 0.f);
     }
+
+    @Test
+    public void sum() {
+        List<Float> a = Arrays.asList(1.f, 2.f, 3.f);
+        assertEquals(6.f, MathStat.sum(a), 0.f);
+    }
 }
