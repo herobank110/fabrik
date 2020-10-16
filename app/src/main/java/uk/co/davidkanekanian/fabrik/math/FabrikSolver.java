@@ -47,6 +47,8 @@ public class FabrikSolver {
      * within reach but there is no previous solve data, the original
      * joint chain is returned.
      *
+     * Warning: Saves joint data between calls to solve.
+     *
      * @param goal The end effector to place the end joint of the IK
      * chain.
      * @return Solved vertex position.
@@ -56,9 +58,35 @@ public class FabrikSolver {
             throw new AssertionError("Cannot solve without vertices. Configure first.");
         }
 
-        // TODO
+        float chainLength = MathStat.sum(lengths);
+        if (MathStat.getDist(start, goal) < chainLength) {
+            // The effector is beyond joint capability.
+            straightenTowardsGoal();
+        } else {
+            // The effector is within reach.
+            if (lastVerts == null) {
+                // Cannot solve if last verts not valid.
+                // Prepare last verts for next iteration.
+                lastVerts = new ArrayList<Vector2f>(verts);
+                // Return original vertices unchanged.
+                return verts;
+            }
+            doSolve();
+        }
 
-        return new ArrayList<>();
+        // Save for the next solve.
+        // TODO find a way to avoid dynamic allocation if possible
+        lastVerts = new ArrayList<Vector2f>(verts);
+
+        return verts;
+    }
+
+    private void straightenTowardsGoal() {
+        // TODO
+    }
+
+    private void doSolve() {
+        // TODO
     }
 
     public float getTolerance() {
