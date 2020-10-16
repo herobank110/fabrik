@@ -82,7 +82,18 @@ public class FabrikSolver {
     }
 
     private void straightenTowardsGoal() {
-        // TODO
+        Vector2f direction = new Vector2f(start);
+        direction.sub(goal);
+        // No vector division function exists!
+        direction.mul(1 / direction.length());
+        Vector2f dirTemp = new Vector2f(direction);
+
+        for (int i = 0; i + 1 < verts.size(); i++) {
+            float lengthToNext = lengths.get(i);
+            Vector2f prev = new Vector2f(verts.get(i));
+            dirTemp.set(direction).mul(lengthToNext);
+            verts.set(i + 1, prev.add(dirTemp));
+        }
     }
 
     private void doSolve() {
