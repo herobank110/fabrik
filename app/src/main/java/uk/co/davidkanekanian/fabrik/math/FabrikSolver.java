@@ -88,16 +88,33 @@ public class FabrikSolver {
         direction.mul(1 / direction.length());
         Vector2f dirTemp = new Vector2f(direction);
 
+        Vector2f prev = new Vector2f();
         for (int i = 0; i + 1 < verts.size(); i++) {
             float lengthToNext = lengths.get(i);
-            Vector2f prev = new Vector2f(verts.get(i));
             dirTemp.set(direction).mul(lengthToNext);
+            prev.set(verts.get(i));
             verts.set(i + 1, prev.add(dirTemp));
         }
     }
 
     private void doSolve() {
-        // TODO
+        for (int _ = 0; _ < maxIterations; _++) {
+            // Put the end vertex at the goal.
+            verts.set(verts.size() - 1, goal);
+
+            // Iterate backwards to solve in place.
+            Vector2f direction = new Vector2f();
+            Vector2f prev = new Vector2f();
+            for (int i = verts.size() - 1; i > 0; i--) {
+                direction.set(verts.get(i + 1)).sub(verts.get(i));
+                direction.mul(1 / direction.length());
+                prev.set(verts.get(i));
+                verts.set(i + 1, prev.add(direction.mul(lengths.get(i - 1))));
+            }
+
+            // todo forwards iterate
+
+        }
     }
 
     public float getTolerance() {
