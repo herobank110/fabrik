@@ -98,7 +98,7 @@ public class FabrikSolver {
     }
 
     private void doSolve() {
-        for (int _ = 0; _ < maxIterations; _++) {
+        for (int iterCount = 0; iterCount < maxIterations; iterCount++) {
             // Put the end vertex at the goal.
             verts.set(verts.size() - 1, goal);
 
@@ -112,8 +112,22 @@ public class FabrikSolver {
                 verts.set(i + 1, prev.add(direction.mul(lengths.get(i - 1))));
             }
 
-            // todo forwards iterate
+            // Put the first point at the original start.
+            verts.set(0, start);
 
+            // Iterate forwards to solve in place.
+            for (int i = 0; i < verts.size() - 1; i++) {
+                direction.set(verts.get(i + 1)).sub(verts.get(i));
+                direction.mul(1 / direction.length());
+                prev.set(verts.get(i));
+                verts.set(i + 1, prev.add(direction.mul(lengths.get(i))));
+            }
+
+            Vector2f toleranceCheck = new Vector2f(verts.get(verts.size() - 1));
+            if (toleranceCheck.sub(goal).length() < tolerance) {
+                // Stop early if within allowed tolerance.
+                break;
+            }
         }
     }
 
