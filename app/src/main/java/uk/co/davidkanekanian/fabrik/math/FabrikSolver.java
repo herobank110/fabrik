@@ -67,7 +67,7 @@ public class FabrikSolver {
             if (lastVerts == null) {
                 // Cannot solve if last verts not valid.
                 // Prepare last verts for next iteration.
-                lastVerts = new ArrayList<Vector2f>(verts);
+                lastVerts = new ArrayList<>(verts);
                 // Return original vertices unchanged.
                 return verts;
             }
@@ -76,7 +76,7 @@ public class FabrikSolver {
 
         // Save for the next solve.
         // TODO find a way to avoid dynamic allocation if possible
-        lastVerts = new ArrayList<Vector2f>(verts);
+        lastVerts = new ArrayList<>(verts);
 
         return verts;
     }
