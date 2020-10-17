@@ -131,14 +131,6 @@ public class FabrikSolver {
         }
     }
 
-    public Vector2f getGoal() {
-        return goal;
-    }
-
-    public void setGoal(Vector2f goal) {
-        this.goal = goal;
-    }
-
     public float getTolerance() {
         return tolerance;
     }
