@@ -59,7 +59,8 @@ public class FabrikSolver {
         }
 
         float chainLength = MathStat.sum(lengths);
-        if (MathStat.getDist(start, goal) < chainLength) {
+        this.goal = goal;
+        if (MathStat.getDist(start, goal) > chainLength) {
             // The effector is beyond joint capability.
             straightenTowardsGoal();
         } else {
@@ -82,8 +83,8 @@ public class FabrikSolver {
     }
 
     private void straightenTowardsGoal() {
-        Vector2f direction = new Vector2f(start);
-        direction.sub(goal);
+        Vector2f direction = new Vector2f(goal);
+        direction.sub(start);
         // No vector division function exists!
         direction.mul(1 / direction.length());
         Vector2f dirTemp = new Vector2f(direction);
