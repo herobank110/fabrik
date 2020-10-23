@@ -10,10 +10,15 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.joml.Vector2f;
+
+import uk.co.davidkanekanian.fabrik.math.MathStat;
+
 public class Canvas extends View {
     Paint myPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     Rect myRect = new Rect();
     boolean isFirst = true;
+    DrawHelper drawHelper = new DrawHelper(null);
 
     // All constructor overloads of View have to be defined!
 
@@ -44,10 +49,18 @@ public class Canvas extends View {
             myRect.set(10, 10, 100, 100);
             myPaint.setColor(Color.RED);
             canvas.drawRect(myRect, myPaint);
+
+            //canvas.drawLine(100.f, 10.f, 100.f, 200.f, myPaint);
+            drawHelper.setCanvas(canvas)
+                    .drawCross(
+                            new Vector2f(110.f + 45.f, MathStat.lerp(10.f, 100.f, 0.5f)),
+                            new Vector2f(45.f, 45.f),
+                            myPaint);
+
             isFirst = false;
             // Maybe the easiest way is to not use a complex interval drawing
             // and just redraw when the model has changed.
-            this.invalidate();
+            // this.invalidate();
         }
     }
 }
