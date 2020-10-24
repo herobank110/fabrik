@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,10 @@ public class Canvas extends View {
     Rect myRect = new Rect();
     boolean isFirst = true;
     DrawHelper drawHelper = new DrawHelper(null);
+
+    public boolean isDown = false;
+    public Vector2f fingerLocation = new Vector2f();
+    private final Vector2f effectorHalfSize = new Vector2f(50.f, 50.f);
 
     // All constructor overloads of View have to be defined!
 
@@ -61,6 +66,11 @@ public class Canvas extends View {
             // Maybe the easiest way is to not use a complex interval drawing
             // and just redraw when the model has changed.
             // this.invalidate();
+        }
+
+        if (isDown) {
+            drawHelper.setCanvas(canvas)
+                    .drawCross(fingerLocation, effectorHalfSize, myPaint);
         }
     }
 }
