@@ -27,8 +27,8 @@ public class Canvas extends View {
     public boolean isDown = false;
     public Vector2f fingerLocation = new Vector2f();
     private final Vector2f effectorHalfSize = new Vector2f(50.f, 50.f);
-    private Vector2f heldPointSize = new Vector2f(50.f, 50.f);
-    private Vector2f unheldPointSize = new Vector2f(20.f, 20.f);
+    private Vector2f heldPointSize = new Vector2f(70.f, 70.f);
+    private Vector2f unheldPointSize = new Vector2f(50.f, 50.f);
 
     // All constructor overloads of View have to be defined!
 
