@@ -19,12 +19,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     /** Canvas to draw world onto. */
     private Canvas canvas;
 
-    /** Button to toggle place and edit mode. */
-    private Button placeButton;
-
-    /** Whether a new point should be placed on touch. */
-    private boolean isInPlaceMode = false;
-
     /** Point that is being dragged, or  -1 if not being dragged. */
     private int dragPointContext = -1;
 
@@ -43,27 +37,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         Vector2f b = new Vector2f(5.25f, 10.f);
         a.add(b);
 
-        TextView textView = findViewById(R.id.test_text);
-        textView.setText(a.toString(NumberFormat.getNumberInstance()));
-
         canvas = findViewById(R.id.fabrik_canvas);
         canvas.setOnTouchListener(this);
         canvas.master = this;
-
-        placeButton = findViewById(R.id.place_button);
-        refreshPlaceButton();
-        placeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Toggle place mode on click.
-                isInPlaceMode = !isInPlaceMode;
-                refreshPlaceButton();
-            }
-        });
-    }
-
-    private void refreshPlaceButton() {
-        placeButton.setText(isInPlaceMode ? "edit mode" : "place mode");
     }
 
     @Override
@@ -71,10 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 canvas.isDown = true;
-                if (isInPlaceMode) {
+                if (!tryGrabPoint(motionEvent)) {
                     addPointAndGrab(motionEvent);
-                } else {
-                    tryGrabPoint(motionEvent);
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -89,6 +63,21 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         // Redraw canvas.
         canvas.invalidate();
         return true;  // Event is consumed.
+    }
+
+    /** Try to grab a point under the finger. */
+    private boolean tryGrabPoint(MotionEvent motionEvent) {
+        for (int i = 0; i < points.size(); i++) {
+            Vector2f point = points.get(i);
+            if (point.distance(motionEvent.getX(), motionEvent.getY()) < maxGrabDist) {
+                // The point can be dragged!
+                dragPointContext = i;
+                Log.d("David", "Started dragging point at index " + dragPointContext);
+                return true;
+            }
+        }
+        Log.d("David", "Failed to start drag");
+        return false;
     }
 
     /** Add a new point at the touch point. */
@@ -108,21 +97,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             Log.d("David", "Moved point at index " + dragPointContext + " to "
             + motionEvent.getX() + ", " + motionEvent.getY());
         }
-    }
-
-    /** Try to grab a point under the finger. */
-    private boolean tryGrabPoint(MotionEvent motionEvent) {
-        for (int i = 0; i < points.size(); i++) {
-            Vector2f point = points.get(i);
-            if (point.distance(motionEvent.getX(), motionEvent.getY()) < maxGrabDist) {
-                // The point can be dragged!
-                dragPointContext = i;
-                Log.d("David", "Started dragging point at index " + dragPointContext);
-                return true;
-            }
-        }
-        Log.d("David", "Failed to start drag");
-        return false;
     }
 
     public int getDragPointContext() {
