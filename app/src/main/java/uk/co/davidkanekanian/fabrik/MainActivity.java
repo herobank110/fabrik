@@ -3,6 +3,7 @@ package uk.co.davidkanekanian.fabrik;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         canvas = findViewById(R.id.fabrik_canvas);
         canvas.setOnTouchListener(this);
+        canvas.master = this;
 
         placeButton = findViewById(R.id.place_button);
         refreshPlaceButton();
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         points.add(new Vector2f(motionEvent.getX(), motionEvent.getY()));
         // Set the context so touch move events can drag this point.
         dragPointContext = points.size() - 1;
+        Log.d("David", "Added point at index " + dragPointContext);
     }
 
     /** Move the grabbed point, if any, based on a touch event. */
@@ -102,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if (dragPointContext != -1) {
             Vector2f point = points.get(dragPointContext);
             point.set(motionEvent.getX(), motionEvent.getY());
+            Log.d("David", "Moved point at index " + dragPointContext + " to "
+            + motionEvent.getX() + ", " + motionEvent.getY());
         }
     }
 
@@ -112,9 +117,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             if (point.distance(motionEvent.getX(), motionEvent.getY()) < maxGrabDist) {
                 // The point can be dragged!
                 dragPointContext = i;
+                Log.d("David", "Started dragging point at index " + dragPointContext);
                 return true;
             }
         }
+        Log.d("David", "Failed to start drag");
         return false;
     }
 
@@ -122,4 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         return dragPointContext;
     }
 
+    public List<Vector2f> getPoints() {
+        return points;
+    }
 }

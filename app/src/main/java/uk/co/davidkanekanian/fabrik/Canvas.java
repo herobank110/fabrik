@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 
 import org.joml.Vector2f;
 
+import java.util.List;
+
 import uk.co.davidkanekanian.fabrik.math.MathStat;
 
 public class Canvas extends View {
@@ -20,10 +22,13 @@ public class Canvas extends View {
     Rect myRect = new Rect();
     boolean isFirst = true;
     DrawHelper drawHelper = new DrawHelper(null);
+    public MainActivity master;
 
     public boolean isDown = false;
     public Vector2f fingerLocation = new Vector2f();
     private final Vector2f effectorHalfSize = new Vector2f(50.f, 50.f);
+    private Vector2f heldPointSize = new Vector2f(50.f, 50.f);
+    private Vector2f unheldPointSize = new Vector2f(20.f, 20.f);
 
     // All constructor overloads of View have to be defined!
 
@@ -68,9 +73,12 @@ public class Canvas extends View {
             // this.invalidate();
         }
 
-        if (isDown) {
-            drawHelper.setCanvas(canvas)
-                    .drawCross(fingerLocation, effectorHalfSize, myPaint);
+        List<Vector2f> points = master.getPoints();
+        for (int i = 0; i < points.size(); i++) {
+            // Draw each point as a cross, different size if held.
+            drawHelper.setCanvas(canvas).drawCross(points.get(i),
+                    i == master.getDragPointContext() ? heldPointSize : unheldPointSize,
+                    myPaint);
         }
     }
 
