@@ -54,18 +54,14 @@ public class Canvas extends View {
         // Seems to only be called once. Maybe call multiple times.
         // But the next time it is drawn (with invalidate()) the canvas
         // is cleared automatically.
-        Log.d("My canvas", "drawing");
         if (isFirst) {
-            myRect.set(10, 10, 100, 100);
-            myPaint.setColor(Color.RED);
-            canvas.drawRect(myRect, myPaint);
-
-            //canvas.drawLine(100.f, 10.f, 100.f, 200.f, myPaint);
-            drawHelper.setCanvas(canvas)
-                    .drawCross(
-                            new Vector2f(110.f + 45.f, MathStat.lerp(10.f, 100.f, 0.5f)),
-                            new Vector2f(45.f, 45.f),
-                            myPaint);
+            myPaint.setColor(Color.BLACK);
+            myPaint.setTextAlign(Paint.Align.CENTER);
+            myPaint.setStrokeWidth(1.f);
+            myPaint.setTextSize(48.f);
+            canvas.drawText("Tap to add a point",
+                    canvas.getWidth() / 2, canvas.getHeight() / 2,
+                    myPaint);
 
             isFirst = false;
             // Maybe the easiest way is to not use a complex interval drawing
@@ -73,6 +69,8 @@ public class Canvas extends View {
             // this.invalidate();
         }
 
+        myPaint.setColor(Color.RED);
+        myPaint.setStrokeWidth(3.f);
         List<Vector2f> points = master.getPoints();
         for (int i = 0; i < points.size(); i++) {
             // Draw each point as a cross, different size if held.
