@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.joml.Vector2f;
@@ -18,6 +19,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
     /** Canvas to draw world onto. */
     private Canvas canvas;
+
+    /** Drop dragged point here to delete it. */
+    private ImageView deletePointImage;
 
     /** Point that is being dragged, or  -1 if not being dragged. */
     private int dragPointContext = -1;
@@ -40,6 +44,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         canvas = findViewById(R.id.fabrik_canvas);
         canvas.setOnTouchListener(this);
         canvas.master = this;
+
+        deletePointImage = findViewById(R.id.delete_point_image);
+        refreshDeletePointImage();
+    }
+
+    /** Hide the delete button unless drag in operation. */
+    private void refreshDeletePointImage() {
+        deletePointImage.setVisibility(dragPointContext != -1 ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -50,11 +62,13 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 if (!tryGrabPoint(motionEvent)) {
                     addPointAndGrab(motionEvent);
                 }
+                refreshDeletePointImage();
                 break;
             case MotionEvent.ACTION_UP:
                 canvas.isDown = false;
                 // Invalidate dragged point.
                 dragPointContext = -1;
+                refreshDeletePointImage();
                 break;
             case MotionEvent.ACTION_MOVE:
                 moveGrabbedPoint(motionEvent);
