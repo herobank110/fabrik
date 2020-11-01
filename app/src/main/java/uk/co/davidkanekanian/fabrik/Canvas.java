@@ -73,4 +73,10 @@ public class Canvas extends View {
                     .drawCross(fingerLocation, effectorHalfSize, myPaint);
         }
     }
+
+    @Override
+    public boolean performClick() {
+        // Not sure why this is needed but IDE gave warning.
+        return super.performClick();
+    }
 }
