@@ -6,13 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import org.joml.Vector2f;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,9 +63,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 break;
             case MotionEvent.ACTION_UP:
                 canvas.isDown = false;
-                // Invalidate dragged point.
-                dragPointContext = -1;
+                tryDeleteGrabbedPoint();
                 refreshDeletePointImage();
+                // Invalidate dragged point regardless of whether it was deleted.
+                invalidateDragPointContext();
                 break;
             case MotionEvent.ACTION_MOVE:
                 moveGrabbedPoint(motionEvent);
@@ -77,6 +75,36 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         // Redraw canvas.
         canvas.invalidate();
         return true;  // Event is consumed.
+    }
+
+    /** Make drag context invalid. */
+    private void invalidateDragPointContext() {
+        dragPointContext = -1;
+    }
+
+    /** Delete the dragged point if released over the delete image.
+     *
+     * Naturally this invalidates drag context if the point was deleted.
+     *
+     * @returns Whether a point was deleted. */
+    private boolean tryDeleteGrabbedPoint() {
+        if (dragPointContext != -1) {
+            Vector2f point = points.get(dragPointContext);
+//                    if (deletePointImage.getClipBounds().contains((int)point.x, (int)point.y)) {
+            float w = deletePointImage.getWidth(),
+                    h = deletePointImage.getHeight(),
+                    x = deletePointImage.getX(),
+                    y = deletePointImage.getY();
+            if (x < point.x && point.x < x + w &&
+                    y < point.y && point.y < y + h) {
+                // Delete that point.
+                points.remove(dragPointContext);
+                invalidateDragPointContext();
+                return true;
+            }
+        }
+        // Point was not deleted.
+        return false;
     }
 
     /** Try to grab a point under the finger. */
