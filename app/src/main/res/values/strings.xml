@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Fabrik</string>
+    <string name="delete_point">delete point</string>
 </resources>
