@@ -7,6 +7,8 @@ import java.util.List;
 
 import uk.co.davidkanekanian.fabrik.BuildConfig;
 
+import static uk.co.davidkanekanian.fabrik.BuildConfig.DEBUG;
+
 public class FabrikSolver {
 
     // Solve data
@@ -29,7 +31,7 @@ public class FabrikSolver {
      * @param newVerts The new vertices to use.
      */
     public void configure(List<Vector2f> newVerts) {
-        if (BuildConfig.DEBUG && newVerts.size() == 0) {
+        if (DEBUG && newVerts.size() == 0) {
             throw new AssertionError("Fabrik solver requires at least 1 point");
         }
 
@@ -54,7 +56,7 @@ public class FabrikSolver {
      * @return Solved vertex position.
      */
     public List<Vector2f> solve(Vector2f goal) {
-        if (BuildConfig.DEBUG && verts == null) {
+        if (DEBUG && verts == null) {
             throw new AssertionError("Cannot solve without vertices. Configure first.");
         }
 
@@ -83,18 +85,22 @@ public class FabrikSolver {
     }
 
     private void straightenTowardsGoal() {
+        if (DEBUG && verts.size() == 0) {
+            throw new Error("Empty verts to set goal");
+        }
         Vector2f direction = new Vector2f(goal);
         direction.sub(start);
         // No vector division function exists!
         direction.mul(1 / direction.length());
         Vector2f dirTemp = new Vector2f(direction);
 
-        Vector2f prev = new Vector2f();
+        Vector2f prev = new Vector2f(verts.get(0));
         for (int i = 0; i + 1 < verts.size(); i++) {
             float lengthToNext = lengths.get(i);
             dirTemp.set(direction).mul(lengthToNext);
-            prev.set(verts.get(i));
-            verts.set(i + 1, prev.add(dirTemp));
+            Vector2f current =  verts.get(i + 1);
+            // This also mutates prev.
+            current.set(prev.add(dirTemp));
         }
     }
 
