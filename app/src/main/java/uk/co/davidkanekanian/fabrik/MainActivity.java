@@ -7,14 +7,22 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.joml.Vector2f;
 
+import java.lang.reflect.Array;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
     private Canvas canvas;
+    private Button placeButton;
+    private boolean isInPlaceMode = false;
+    private int dragPointContext = -1;
+    private List<Vector2f> points = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +38,21 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         canvas = findViewById(R.id.fabrik_canvas);
         canvas.setOnTouchListener(this);
+
+        placeButton = findViewById(R.id.place_button);
+        refreshPlaceButton();
+        placeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Toggle place mode on click.
+                isInPlaceMode = !isInPlaceMode;
+                refreshPlaceButton();
+            }
+        });
+    }
+
+    private void refreshPlaceButton() {
+        placeButton.setText(isInPlaceMode ? "edit mode" : "place mode");
     }
 
     @Override
@@ -37,12 +60,25 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 canvas.isDown = true;
+                if (isInPlaceMode) {
+                    // Add a new point here.
+                    points.add(new Vector2f(motionEvent.getX(), motionEvent.getY()));
+                } else {
+                    //
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 canvas.isDown = false;
                 break;
             case MotionEvent.ACTION_MOVE:
                 canvas.fingerLocation.set(motionEvent.getX(), motionEvent.getY());
+                if (dragPointContext != -1) {
+                    if (isInPlaceMode) {
+                        // Move last point.
+                        Vector2f point = points.get(dragPointContext);
+                        point.set(motionEvent.getX(), motionEvent.getY());
+                    }
+                }
                 break;
         }
         // Redraw canvas.
