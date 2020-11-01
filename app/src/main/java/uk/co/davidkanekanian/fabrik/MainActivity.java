@@ -27,16 +27,12 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private List<Vector2f> points = new ArrayList<>();
 
     /** Screen distance to point to grab it, in pixels. */
-    private final float maxGrabDist = 50.f;
+    private static final float maxGrabDist = 50.f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Vector2f a = new Vector2f(2.25f, 0.f);
-        Vector2f b = new Vector2f(5.25f, 10.f);
-        a.add(b);
 
         canvas = findViewById(R.id.fabrik_canvas);
         canvas.setOnTouchListener(this);
