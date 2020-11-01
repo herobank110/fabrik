@@ -60,9 +60,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             case MotionEvent.ACTION_UP:
                 canvas.isDown = false;
                 tryDeleteGrabbedPoint();
-                refreshDeletePointImage();
                 // Invalidate dragged point regardless of whether it was deleted.
                 invalidateDragPointContext();
+                refreshDeletePointImage();
                 break;
             case MotionEvent.ACTION_MOVE:
                 moveGrabbedPoint(motionEvent);
