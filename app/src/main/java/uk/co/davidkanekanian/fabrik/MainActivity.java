@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private List<Vector2f> points = new ArrayList<>();
 
     /** Screen distance to point to grab it, in pixels. */
-    private static final float maxGrabDist = 50.f;
+    private static final float maxGrabDist = 100.f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
