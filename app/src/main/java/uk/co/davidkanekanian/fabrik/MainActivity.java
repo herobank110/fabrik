@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private List<Vector2f> points = new ArrayList<>();
 
     /** Previously created points in the world. */
-    private List<Vector2f> lastPoints = null;
+    private List<Vector2f> lastPoints = new ArrayList<>();
 
     /** Screen distance to point to grab it, in pixels. */
     private static final float maxGrabDist = 100.f;
@@ -95,12 +95,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         isLocked = !isLocked;
         if (isLocked) {
             // When from editing to locked.
-            // Copy the editing points in a new list.
-            lastPoints = new ArrayList<>(points);
+            // Deep clone all points, not just their references.
+            lastPoints.clear();
+            for (Vector2f p : points) { lastPoints.add(new Vector2f(p)); }
         } else {
             // Went from locked to editing mode.
             // Restore the points before editing.
-            points = lastPoints == null ? new ArrayList<Vector2f>() : lastPoints;
+            points.clear();
+            points.addAll(lastPoints);
         }
         canvas.invalidate();
     }

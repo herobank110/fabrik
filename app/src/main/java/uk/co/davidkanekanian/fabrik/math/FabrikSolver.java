@@ -112,7 +112,7 @@ public class FabrikSolver {
             // Iterate backwards to solve in place.
             Vector2f direction = new Vector2f();
             Vector2f prev = new Vector2f();
-            Vector2f current = new Vector2f();
+            Vector2f current;
             for (int i = verts.size() - 1; i > 0; i--) {
                 direction.set(verts.get(i - 1)).sub(verts.get(i));
                 direction.mul(1 / direction.length());
