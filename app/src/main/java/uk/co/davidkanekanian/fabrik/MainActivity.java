@@ -13,6 +13,8 @@ import org.joml.Vector2f;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.davidkanekanian.fabrik.math.FabrikSolver;
+
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
     /** Canvas to draw world onto. */
     private Canvas canvas;
@@ -37,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     /** Location of the end effector. */
     private Vector2f endEffector = new Vector2f(100.f, 100.f);
+
+    /** Solver of IK system. */
+    private FabrikSolver fabrikSolver = new FabrikSolver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,6 +203,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if (dragPointContext != -1) {
             final Vector2f point = isLocked ? endEffector : points.get(dragPointContext);
             point.set(motionEvent.getX(), motionEvent.getY());
+            if (isLocked) {
+                // Update fabrik solver.
+                fabrikSolver.configure(points);
+                fabrikSolver.solve(new Vector2f(endEffector));
+            }
         }
     }
 

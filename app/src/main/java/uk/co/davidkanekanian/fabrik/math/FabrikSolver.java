@@ -98,7 +98,7 @@ public class FabrikSolver {
         for (int i = 0; i + 1 < verts.size(); i++) {
             float lengthToNext = lengths.get(i);
             dirTemp.set(direction).mul(lengthToNext);
-            Vector2f current =  verts.get(i + 1);
+            Vector2f current = verts.get(i + 1);
             // This also mutates prev.
             current.set(prev.add(dirTemp));
         }
@@ -113,10 +113,10 @@ public class FabrikSolver {
             Vector2f direction = new Vector2f();
             Vector2f prev = new Vector2f();
             for (int i = verts.size() - 1; i > 0; i--) {
-                direction.set(verts.get(i + 1)).sub(verts.get(i));
+                direction.set(verts.get(i - 1)).sub(verts.get(i));
                 direction.mul(1 / direction.length());
                 prev.set(verts.get(i));
-                verts.set(i + 1, prev.add(direction.mul(lengths.get(i - 1))));
+                verts.set(i - 1, prev.add(direction.mul(lengths.get(i - 1))));
             }
 
             // Put the first point at the original start.
