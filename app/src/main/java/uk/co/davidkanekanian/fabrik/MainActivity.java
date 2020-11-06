@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import org.joml.Vector2f;
 
@@ -40,11 +42,46 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         deletePointImage = findViewById(R.id.delete_point_image);
         refreshDeletePointImage();
+
+        final ImageView moreActionsButton = findViewById(R.id.more_actions_button);
+        final LinearLayout moreActionsMenu = findViewById(R.id.more_actions_menu);
+
+        // Hide more actions menu by default.
+        moreActionsMenu.setVisibility(View.INVISIBLE);
+
+        // Toggle more actions menu visibility when more action button clicked.
+        moreActionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (moreActionsMenu.getVisibility()) {
+                    case View.VISIBLE: moreActionsMenu.setVisibility(View.INVISIBLE); break;
+                    case View.INVISIBLE: moreActionsMenu.setVisibility(View.VISIBLE); break;
+                    case View.GONE: throw new Error("Invalid visibility state for moreActionMenu");
+                }
+            }
+        });
+
+        final ImageView lockButton = findViewById(R.id.lock_button);
+        lockButton.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View view) { onClickLock(view); }
+        });
+
+        final ImageView saveButton = findViewById(R.id.save_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View view) { onClickSave(view); }
+        });
     }
 
     /** Hide the delete button unless drag in operation. */
     private void refreshDeletePointImage() {
         deletePointImage.setVisibility(dragPointContext != -1 ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void onClickLock(View view) {
+
+    }
+
+    private void onClickSave(View view) {
     }
 
     @Override
