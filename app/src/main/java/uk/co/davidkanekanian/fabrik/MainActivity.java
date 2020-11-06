@@ -133,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 //                    if (deletePointImage.getClipBounds().contains((int)point.x, (int)point.y)) {
             float w = deletePointImage.getWidth(),
                     h = deletePointImage.getHeight(),
-                    x = deletePointImage.getX(),
-                    y = deletePointImage.getY();
+                    x = deletePointImage.getX() + ((LinearLayout)deletePointImage.getParent()).getX(),
+                    y = deletePointImage.getY() + ((LinearLayout)deletePointImage.getParent()).getY();
             if (x < point.x && point.x < x + w &&
                     y < point.y && point.y < y + h) {
                 // Delete that point.
