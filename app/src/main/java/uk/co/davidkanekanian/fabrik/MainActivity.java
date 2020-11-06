@@ -26,6 +26,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     /** ALl active points in the world. */
     private List<Vector2f> points = new ArrayList<>();
 
+    /** Previously created points in the world. */
+    private List<Vector2f> lastPoints = null;
+
     /** Screen distance to point to grab it, in pixels. */
     private static final float maxGrabDist = 100.f;
 
@@ -85,10 +88,21 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     private void onClickLock(View view) {
         isLocked = !isLocked;
+        if (isLocked) {
+            // When from editing to locked.
+            // Copy the editing points in a new list.
+            lastPoints = points.size() != 0 ?
+                    points.subList(0, points.size()) : null;
+        } else {
+            // Went from locked to editing mode.
+            // Restore the points before editing.
+            points = lastPoints == null ? new ArrayList<Vector2f>() : lastPoints;
+        }
         canvas.invalidate();
     }
 
     private void onClickSave(View view) {
+        throw new Error("save not implemented yet");
     }
 
     @Override
