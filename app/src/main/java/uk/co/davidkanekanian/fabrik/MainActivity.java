@@ -96,8 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         if (isLocked) {
             // When from editing to locked.
             // Copy the editing points in a new list.
-            lastPoints = points.size() != 0 ?
-                    points.subList(0, points.size()) : null;
+            lastPoints = new ArrayList<>(points);
         } else {
             // Went from locked to editing mode.
             // Restore the points before editing.

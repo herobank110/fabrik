@@ -107,27 +107,30 @@ public class FabrikSolver {
     private void doSolve() {
         for (int iterCount = 0; iterCount < maxIterations; iterCount++) {
             // Put the end vertex at the goal.
-            verts.set(verts.size() - 1, goal);
+            verts.get(verts.size() - 1).set(goal);
 
             // Iterate backwards to solve in place.
             Vector2f direction = new Vector2f();
             Vector2f prev = new Vector2f();
+            Vector2f current = new Vector2f();
             for (int i = verts.size() - 1; i > 0; i--) {
                 direction.set(verts.get(i - 1)).sub(verts.get(i));
                 direction.mul(1 / direction.length());
                 prev.set(verts.get(i));
-                verts.set(i - 1, prev.add(direction.mul(lengths.get(i - 1))));
+                current = verts.get(i - 1);
+                current.set(prev.add(direction.mul(lengths.get(i - 1))));
             }
 
             // Put the first point at the original start.
-            verts.set(0, start);
+            verts.get(0).set(start);
 
             // Iterate forwards to solve in place.
             for (int i = 0; i < verts.size() - 1; i++) {
                 direction.set(verts.get(i + 1)).sub(verts.get(i));
                 direction.mul(1 / direction.length());
                 prev.set(verts.get(i));
-                verts.set(i + 1, prev.add(direction.mul(lengths.get(i))));
+                current = verts.get(i + 1);
+                current.set(prev.add(direction.mul(lengths.get(i))));
             }
 
             Vector2f toleranceCheck = new Vector2f(verts.get(verts.size() - 1));
