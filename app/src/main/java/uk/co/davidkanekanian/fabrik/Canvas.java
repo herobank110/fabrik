@@ -29,6 +29,7 @@ public class Canvas extends View {
     private static final Vector2f heldPointSize = new Vector2f(70.f, 70.f);
     private static final Vector2f unheldPointSize = new Vector2f(50.f, 50.f);
     private static final Vector2f indexLabelOffset = new Vector2f(15.f, 50.f);
+    private static final float lockedPointRadius = 50.f;
 
     // All constructor overloads of View have to be defined!
 
@@ -79,15 +80,28 @@ public class Canvas extends View {
         myPaint2.setTextAlign(Paint.Align.LEFT);
 
         List<Vector2f> points = master.getPoints();
-        for (int i = 0; i < points.size(); i++) {
-            // Draw each point as a cross, different size if held.
-            final Vector2f point = points.get(i);
-            final Vector2f size = i == master.getDragPointContext() ? heldPointSize : unheldPointSize;
+        if (master.isLocked()) {
+            for (int i = 0; i < points.size(); i++) {
+                // Draw each point as a circle.
+                final Vector2f point = points.get(i);
+                canvas.drawCircle(point.x, point.y, lockedPointRadius, myPaint);
+            }
+            // Draw the end effector as a cross.
+            myPaint.setColor(Color.GRAY);
+            final Vector2f point = master.getEndEffector();
+            final Vector2f size = master.getDragPointContext() != -1 ? heldPointSize : unheldPointSize;
             drawHelper.setCanvas(canvas).drawCross(point, size, myPaint);
+        } else {
+            for (int i = 0; i < points.size(); i++) {
+                // Draw each point as a cross, different size if held.
+                final Vector2f point = points.get(i);
+                final Vector2f size = i == master.getDragPointContext() ? heldPointSize : unheldPointSize;
+                drawHelper.setCanvas(canvas).drawCross(point, size, myPaint);
 
-            canvas.drawText(String.format("%d", i + 1),
-                    point.x + indexLabelOffset.x, point.y + indexLabelOffset.y,
-                    myPaint2);
+                canvas.drawText(String.format("%d", i + 1),
+                        point.x + indexLabelOffset.x, point.y + indexLabelOffset.y,
+                        myPaint2);
+            }
         }
     }
 

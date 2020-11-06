@@ -3,10 +3,8 @@ package uk.co.davidkanekanian.fabrik;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -31,6 +29,12 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     /** Screen distance to point to grab it, in pixels. */
     private static final float maxGrabDist = 100.f;
 
+    /** Whether the points are in locked mode. */
+    private boolean isLocked = false;
+
+    /** Location of the end effector. */
+    private Vector2f endEffector = new Vector2f(100.f, 100.f);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,16 +51,16 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         final LinearLayout moreActionsMenu = findViewById(R.id.more_actions_menu);
 
         // Hide more actions menu by default.
-        moreActionsMenu.setVisibility(View.INVISIBLE);
+        moreActionsMenu.setVisibility(View.GONE);
 
         // Toggle more actions menu visibility when more action button clicked.
         moreActionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switch (moreActionsMenu.getVisibility()) {
-                    case View.VISIBLE: moreActionsMenu.setVisibility(View.INVISIBLE); break;
-                    case View.INVISIBLE: moreActionsMenu.setVisibility(View.VISIBLE); break;
-                    case View.GONE: throw new Error("Invalid visibility state for moreActionMenu");
+                    case View.VISIBLE: moreActionsMenu.setVisibility(View.GONE); break;
+                    case View.GONE: moreActionsMenu.setVisibility(View.VISIBLE); break;
+                    case View.INVISIBLE: throw new Error("Invalid visibility state for moreActionMenu");
                 }
             }
         });
@@ -74,11 +78,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     /** Hide the delete button unless drag in operation. */
     private void refreshDeletePointImage() {
-        deletePointImage.setVisibility(dragPointContext != -1 ? View.VISIBLE : View.INVISIBLE);
+        deletePointImage.setVisibility(
+                dragPointContext != -1 && !isLocked
+                ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void onClickLock(View view) {
-
+        isLocked = !isLocked;
+        canvas.invalidate();
     }
 
     private void onClickSave(View view) {
@@ -142,9 +149,14 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     /** Try to grab a point under the finger. */
     private boolean tryGrabPoint(MotionEvent motionEvent) {
+        if (isLocked) {
+            // Snap end effector to finger in any point when locked.
+            dragPointContext = 0;
+            return true;
+        }
         for (int i = 0; i < points.size(); i++) {
             Vector2f point = points.get(i);
-            if (point.distance(motionEvent.getX(), motionEvent.getY()) < maxGrabDist) {
+            if (isWithinRange(point, motionEvent)) {
                 // The point can be dragged!
                 dragPointContext = i;
                 return true;
@@ -153,18 +165,24 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         return false;
     }
 
+    private boolean isWithinRange(Vector2f point, MotionEvent motionEvent) {
+        return point.distance(motionEvent.getX(), motionEvent.getY()) < maxGrabDist;
+    }
+
     /** Add a new point at the touch point. */
     private void addPointAndGrab(MotionEvent motionEvent) {
-        points.add(new Vector2f(motionEvent.getX(), motionEvent.getY()));
-        // Set the context so touch move events can drag this point.
-        dragPointContext = points.size() - 1;
+        if (!isLocked) {
+            points.add(new Vector2f(motionEvent.getX(), motionEvent.getY()));
+            // Set the context so touch move events can drag this point.
+            dragPointContext = points.size() - 1;
+        }
     }
 
     /** Move the grabbed point, if any, based on a touch event. */
     private void moveGrabbedPoint(MotionEvent motionEvent) {
         canvas.fingerLocation.set(motionEvent.getX(), motionEvent.getY());
         if (dragPointContext != -1) {
-            Vector2f point = points.get(dragPointContext);
+            final Vector2f point = isLocked ? endEffector : points.get(dragPointContext);
             point.set(motionEvent.getX(), motionEvent.getY());
         }
     }
@@ -175,5 +193,13 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     public List<Vector2f> getPoints() {
         return points;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public Vector2f getEndEffector() {
+        return endEffector;
     }
 }
