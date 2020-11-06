@@ -1,10 +1,13 @@
 package uk.co.davidkanekanian.fabrik;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -42,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     /** Solver of IK system. */
     private FabrikSolver fabrikSolver = new FabrikSolver();
+
+    /** ID of chain in database, or -1 if there is no save context. */
+    private int chainId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +114,36 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     }
 
     private void onClickSave(View view) {
-        throw new Error("save not implemented yet");
+        if (chainId == -1) {
+            // First time saving. Create new file.
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_save_name, null);
+            final EditText editText = dialogView.findViewById(R.id.chain_name_input);
+
+            final AlertDialog saveDialog = new AlertDialog.Builder(this)
+                    .setTitle("Save Chain")
+                    .setMessage("Enter a name to save the chain")
+                    .setView(dialogView)
+                    .create();
+
+            // Bind actions to click and cancel dialog.
+            dialogView.findViewById(R.id.dialog_save_name_save).setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override public void onClick(View view) {
+                            saveDialog.dismiss();
+                        }
+                    }
+            );
+            dialogView.findViewById(R.id.dialog_save_name_cancel).setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override public void onClick(View view) {
+                            saveDialog.dismiss();
+                        }
+                    }
+            );
+
+            // Show the dialog.
+            saveDialog.show();
+        }
     }
 
     @Override

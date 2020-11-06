@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Fabrik</string>
     <string name="delete_point">delete point</string>
+    <string name="chain_name">Chain Name</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
 </resources>
