@@ -20,6 +20,9 @@ public interface ChainDao {
 
     // Read
 
+    @Query("SELECT * FROM chains WHERE id = :chainId")
+    Chain getChain(int chainId);
+
     @Query("SELECT * FROM chains")
     Chain[] getAllChains();
 

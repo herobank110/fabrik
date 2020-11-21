@@ -14,12 +14,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.davidkanekanian.fabrik.math.FabrikSolver;
+import uk.co.davidkanekanian.fabrik.persistence.Chain;
 import uk.co.davidkanekanian.fabrik.persistence.ChainDao;
 import uk.co.davidkanekanian.fabrik.persistence.ChainDatabase;
 import uk.co.davidkanekanian.fabrik.persistence.Point;
@@ -147,36 +150,65 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     private void onClickSave(View view) {
         if (chainId == -1) {
-            // First time saving. Create new file.
-            View dialogView = getLayoutInflater().inflate(R.layout.dialog_save_name, null);
-            final EditText editText = dialogView.findViewById(R.id.chain_name_input);
-
-            final AlertDialog saveDialog = new AlertDialog.Builder(this)
-                    .setTitle("Save Chain")
-                    .setMessage("Enter a name to save the chain")
-                    .setView(dialogView)
-                    .create();
-
-            // Bind actions to click and cancel dialog.
-            dialogView.findViewById(R.id.dialog_save_name_save).setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override public void onClick(View view) {
-                            saveChain(editText.getText().toString());
-                            saveDialog.dismiss();
-                        }
-                    }
-            );
-            dialogView.findViewById(R.id.dialog_save_name_cancel).setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override public void onClick(View view) {
-                            saveDialog.dismiss();
-                        }
-                    }
-            );
-
-            // Show the dialog.
-            saveDialog.show();
+            saveNewChain(view);
+        } else {
+            saveOverChain(view);
         }
+    }
+
+    /** Save over the current file. */
+    private void saveOverChain(View view) {
+        // First remove all old points.
+        final ChainDao dao = database.chainDao();
+        final Point[] oldPoints = dao.getPointsInChain(chainId);
+        for (final Point p : oldPoints) {
+            dao.deletePoint(p.id);
+        }
+
+        // Add new points and link to old chain.
+        for (final Vector2f p : points) {
+            long pId = dao.addPoint(p.x, p.y);
+            dao.addPointToChain(chainId, (int) pId);
+        }
+
+        // TODO maybe add an undo button in case user didn't want to overwrite
+        Chain c = dao.getChain(chainId);
+        final String savedText = String.format("Saved chain as %s", c.name);
+        Snackbar snackbar = Snackbar.make(view, savedText, Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
+    /** Create a new file. */
+    private void saveNewChain(View view) {
+        // First time saving. Create new file.
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_save_name, null);
+        final EditText editText = dialogView.findViewById(R.id.chain_name_input);
+
+        final AlertDialog saveDialog = new AlertDialog.Builder(this)
+                .setTitle("Save Chain")
+                .setMessage("Enter a name to save the chain")
+                .setView(dialogView)
+                .create();
+
+        // Bind actions to click and cancel dialog.
+        dialogView.findViewById(R.id.dialog_save_name_save).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override public void onClick(View view) {
+                        saveChain(editText.getText().toString());
+                        saveDialog.dismiss();
+                    }
+                }
+        );
+        dialogView.findViewById(R.id.dialog_save_name_cancel).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override public void onClick(View view) {
+                        saveDialog.dismiss();
+                    }
+                }
+        );
+
+        // Show the dialog.
+        saveDialog.show();
     }
 
     private void onClickBrowse(View view) {
