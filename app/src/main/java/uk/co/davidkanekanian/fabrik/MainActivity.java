@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     /** Previously created points in the world. */
     private List<Vector2f> lastPoints = new ArrayList<>();
 
+    /** Previously saved points that got overwritten. */
+    private List<Vector2f> overwrittenSavedPoints = new ArrayList<>();
+
     /** Screen distance to point to grab it, in pixels. */
     private static final float maxGrabDist = 100.f;
 
@@ -158,8 +161,34 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     /** Save over the current file. */
     private void saveOverChain(View view) {
-        // First remove all old points.
+        if (chainId == -1) {
+            // No active chain to save over.
+            return;
+        }
+
+        // Save a copy of the old saved points in the points in case of undo.
+        loadChainToList(chainId, overwrittenSavedPoints);
+        saveOverChain(chainId, points);
+
+        // add an undo button in case user didn't want to overwrite
+        Chain c = database.chainDao().getChain(chainId);
+        final String savedText = String.format("Saved chain as %s", c.name);
+        Snackbar.make(view, savedText, Snackbar.LENGTH_LONG)
+                .setAction("Undo", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        saveOverChain(chainId, overwrittenSavedPoints);
+                        // Keep the working set of points as-is.
+                    }
+                })
+                .show();
+    }
+
+    /** Unlink old chain points and write new points. */
+    private void saveOverChain(int chainId, List<Vector2f> points) {
         final ChainDao dao = database.chainDao();
+
+        // First remove all old points.
         final Point[] oldPoints = dao.getPointsInChain(chainId);
         // Remove links to chains before we can delete points.
         dao.removeAllPointsFromChain(chainId);
@@ -172,12 +201,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             long pId = dao.addPoint(p.x, p.y);
             dao.addPointToChain(chainId, (int) pId);
         }
-
-        // TODO maybe add an undo button in case user didn't want to overwrite
-        Chain c = dao.getChain(chainId);
-        final String savedText = String.format("Saved chain as %s", c.name);
-        Snackbar snackbar = Snackbar.make(view, savedText, Snackbar.LENGTH_LONG);
-        snackbar.show();
     }
 
     /** Create a new file. */
@@ -232,15 +255,20 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     }
 
     private void loadChain(int inChainId) {
-        Point[] pointsToLoad = database.chainDao().getPointsInChain(inChainId);
         points.clear();
         lastPoints.clear();
-        for (Point p : pointsToLoad) {
-            points.add(new Vector2f(p.x, p.y));
-        }
+        loadChainToList(inChainId, points);
 
         // Set the saved chain ID to the active chain.
         chainId = inChainId;
+    }
+
+    private void loadChainToList(int chainId, List<Vector2f> outList) {
+        outList.clear();
+        Point[] pointsToLoad = database.chainDao().getPointsInChain(chainId);
+        for (Point p : pointsToLoad) {
+            outList.add(new Vector2f(p.x, p.y));
+        }
     }
 
     @Override
