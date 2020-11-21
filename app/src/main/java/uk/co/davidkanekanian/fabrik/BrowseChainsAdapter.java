@@ -30,7 +30,6 @@ class BrowseChainsAdapter extends RecyclerView.Adapter<BrowseChainsAdapter.Chain
                 @Override
                 public void onClick(View view) {
                     Chain myChain = (Chain)containerView.getTag();
-                    Log.d("david", String.format("Clicked chain ID %d", myChain.id));
                     managerActivity.openChain(myChain.id);
                 }
             });

@@ -202,7 +202,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         points.clear();
         lastPoints.clear();
         for (Point p : pointsToLoad) {
-            Log.d("david", "adding point " + p.id);
             points.add(new Vector2f(p.x, p.y));
         }
 
