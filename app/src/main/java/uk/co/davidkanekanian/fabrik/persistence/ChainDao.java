@@ -9,11 +9,11 @@ import androidx.room.Update;
 public interface ChainDao {
     // Create
 
-    @Query("INSERT INTO points (id, x, y) VALUES (:id, :x, :y)")
-    long insertPoint(int id, float x, float y);
+    @Query("INSERT INTO points (x, y) VALUES (:x, :y)")
+    long addPoint(float x, float y);
 
-    @Query("INSERT INTO chains (id, name) VALUES (:id, :name)")
-    long insertChain(int id, String name);
+    @Query("INSERT INTO chains (name) VALUES (:name)")
+    long addChain(String name);
 
     @Query("INSERT INTO chain_point (chain_id, point_id) VALUES (:chainId, :pointId)")
     void addPointToChain(int chainId, int pointId);

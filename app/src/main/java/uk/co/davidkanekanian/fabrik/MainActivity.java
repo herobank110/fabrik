@@ -3,8 +3,8 @@ package uk.co.davidkanekanian.fabrik;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.co.davidkanekanian.fabrik.math.FabrikSolver;
+import uk.co.davidkanekanian.fabrik.persistence.ChainDao;
+import uk.co.davidkanekanian.fabrik.persistence.ChainDatabase;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
     /** Canvas to draw world onto. */
@@ -129,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             dialogView.findViewById(R.id.dialog_save_name_save).setOnClickListener(
                     new View.OnClickListener() {
                         @Override public void onClick(View view) {
+                            saveChain(editText.getText().toString());
                             saveDialog.dismiss();
                         }
                     }
@@ -143,6 +146,15 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
             // Show the dialog.
             saveDialog.show();
+        }
+    }
+
+    private void saveChain(String name) {
+        final ChainDao dao = ChainDatabase.getInstance(getApplicationContext()).chainDao();
+        final long chainId = dao.addChain(name);
+        for (Vector2f p : lastPoints) {
+            final long pointId = dao.addPoint(p.x, p.y);
+            dao.addPointToChain((int) chainId, (int) pointId);
         }
     }
 
