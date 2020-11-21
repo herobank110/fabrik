@@ -161,6 +161,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         // First remove all old points.
         final ChainDao dao = database.chainDao();
         final Point[] oldPoints = dao.getPointsInChain(chainId);
+        // Remove links to chains before we can delete points.
+        dao.removeAllPointsFromChain(chainId);
         for (final Point p : oldPoints) {
             dao.deletePoint(p.id);
         }
