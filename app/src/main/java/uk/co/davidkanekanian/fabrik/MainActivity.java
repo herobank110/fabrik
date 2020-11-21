@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
      *
      * Naturally this invalidates drag context if the point was deleted.
      *
-     * @returns Whether a point was deleted. */
+     * @return Whether a point was deleted. */
     private boolean tryDeleteGrabbedPoint() {
         if (dragPointContext != -1) {
             Vector2f point = points.get(dragPointContext);
