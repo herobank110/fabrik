@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/more_actions_button"
             android:foreground="@android:drawable/ic_menu_more"
+            android:contentDescription="@string/more_actions_button_desc"
             android:minWidth="50dp"
             android:minHeight="50dp" />
 
@@ -44,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/lock_button"
                 android:foreground="@android:drawable/ic_lock_idle_lock"
+                android:contentDescription="@string/lock_button_desc"
                 android:minWidth="50dp"
                 android:minHeight="50dp" />
 
@@ -52,6 +54,16 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/save_button"
                 android:foreground="@android:drawable/ic_menu_save"
+                android:contentDescription="@string/save_button_desc"
+                android:minWidth="50dp"
+                android:minHeight="50dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/browse_button"
+                android:foreground="@android:drawable/ic_menu_search"
+                android:contentDescription="@string/browse_button_desc"
                 android:minWidth="50dp"
                 android:minHeight="50dp" />
         </LinearLayout>
