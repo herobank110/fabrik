@@ -23,7 +23,7 @@ public interface ChainDao {
     @Query("SELECT * FROM chains")
     Chain[] getAllChains();
 
-    @Query("SELECT points.id, points.x, points.y FROM chain_point "
+    @Query("SELECT points.* FROM chain_point "
             + "LEFT JOIN points on point_id = points.id "
             + "WHERE chain_id = :chain_id")
     Point[] getPointsInChain(int chain_id);
