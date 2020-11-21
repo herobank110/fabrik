@@ -1,8 +1,11 @@
 package uk.co.davidkanekanian.fabrik;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -19,6 +22,7 @@ import java.util.List;
 import uk.co.davidkanekanian.fabrik.math.FabrikSolver;
 import uk.co.davidkanekanian.fabrik.persistence.ChainDao;
 import uk.co.davidkanekanian.fabrik.persistence.ChainDatabase;
+import uk.co.davidkanekanian.fabrik.persistence.Point;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
     /** Canvas to draw world onto. */
@@ -51,10 +55,17 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     /** ID of chain in database, or -1 if there is no save context. */
     private int chainId = -1;
 
+    /** Database for use in the app */
+    public static ChainDatabase database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        database = Room.databaseBuilder(getApplicationContext(), ChainDatabase.class, "chains")
+                .allowMainThreadQueries()
+                .build();
 
         canvas = findViewById(R.id.fabrik_canvas);
         canvas.setOnTouchListener(this);
@@ -90,6 +101,21 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View view) { onClickSave(view); }
         });
+
+        final ImageView browseButton = findViewById(R.id.browse_button);
+        browseButton.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View view) { onClickBrowse(view); }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null) {
+            // Save in the object for later saving, possibly.
+            chainId = data.getIntExtra("chainId", -1);
+            loadChain(chainId);
+        }
     }
 
     /** Hide the delete button unless drag in operation. */
@@ -149,13 +175,34 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         }
     }
 
+    private void onClickBrowse(View view) {
+        // Open the chain viewing activity.
+        Intent intent = new Intent(view.getContext(), BrowseChains.class);
+        view.getContext().startActivity(intent);
+    }
+
     private void saveChain(String name) {
-        final ChainDao dao = ChainDatabase.getInstance(getApplicationContext()).chainDao();
-        final long chainId = dao.addChain(name);
+        final ChainDao dao = database.chainDao();
+        final long newChainId = dao.addChain(name);
         for (Vector2f p : lastPoints) {
             final long pointId = dao.addPoint(p.x, p.y);
-            dao.addPointToChain((int) chainId, (int) pointId);
+            dao.addPointToChain((int) newChainId, (int) pointId);
         }
+
+        // Save in the member field in case of saving over the file.
+        chainId = (int) newChainId;
+    }
+
+    private void loadChain(int inChainId) {
+        Point[] pointsToLoad = database.chainDao().getPointsInChain(inChainId);
+        points.clear();
+        lastPoints.clear();
+        for (Point p : pointsToLoad) {
+            points.add(new Vector2f(p.x, p.y));
+        }
+
+        // Set the saved chain ID to the active chain.
+        chainId = inChainId;
     }
 
     @Override
