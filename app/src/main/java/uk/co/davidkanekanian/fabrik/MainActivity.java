@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     /** Database for use in the app */
     public static ChainDatabase database;
 
+    /** Code for opening a chain */
+    private static final int REQ_CODE_BROWSE_CHAIN = 1001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,9 +114,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data != null) {
+        if (requestCode == REQ_CODE_BROWSE_CHAIN && data != null) {
             // Save in the object for later saving, possibly.
             chainId = data.getIntExtra("chainId", -1);
+            Log.d("david", "loading chain id " + chainId);
             loadChain(chainId);
         }
     }
@@ -178,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private void onClickBrowse(View view) {
         // Open the chain viewing activity.
         Intent intent = new Intent(view.getContext(), BrowseChains.class);
-        view.getContext().startActivity(intent);
+        startActivityForResult(intent, REQ_CODE_BROWSE_CHAIN);
     }
 
     private void saveChain(String name) {
@@ -198,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         points.clear();
         lastPoints.clear();
         for (Point p : pointsToLoad) {
+            Log.d("david", "adding point " + p.id);
             points.add(new Vector2f(p.x, p.y));
         }
 
